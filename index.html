@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador ESG - Transparência na Cadeia de Suprimentos</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #0b1120;
+            --border: #334155;
+            --fiap-pink: #ed145b;
+            --fiap-pink-hover: #c80e4b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --green: #10b981;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 40px;
+        }
+
+        header {
+            background-color: #090d16;
+            border-bottom: 3px solid var(--fiap-pink);
+            padding: 16px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .marca {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-box {
+            color: var(--fiap-pink);
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: 3px;
+            border-right: 2px solid var(--border);
+            padding-right: 14px;
+        }
+
+        .titulo-app h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .titulo-app p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .controles-topo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .seletor-auth {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        select, input {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .badge-modo {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modo-online {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+
+        .modo-memoria {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid var(--blue);
+        }
+
+        .container {
+            max-width: 1360px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* Roteiro de Apresentacao */
+        .barra-roteiro {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--fiap-pink);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .barra-roteiro h2 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--fiap-pink);
+            margin-bottom: 10px;
+        }
+
+        .botoes-roteiro {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 13px;
+            font-size: 12.5px;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .btn-primario {
+            background: var(--fiap-pink);
+            color: white;
+        }
+
+        .btn-primario:hover {
+            background: var(--fiap-pink-hover);
+        }
+
+        .btn-secundario {
+            background: #334155;
+            color: var(--text-main);
+        }
+
+        .btn-secundario:hover {
+            background: #475569;
+        }
+
+        .btn-verde {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-verde:hover {
+            background: #047857;
+        }
+
+        .btn-alerta {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-perigo {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-perigo:hover {
+            background: #b91c1c;
+        }
+
+        /* KPIs */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+        }
+
+        .kpi-card span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .kpi-card strong {
+            font-size: 24px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Layout Principal */
+        .grid-principal {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .painel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .painel-titulo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+        }
+
+        .painel-titulo h3 {
+            font-size: 15px;
+        }
+
+        .form-linha {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .campo label {
+            font-size: 11.5px;
+            color: var(--text-muted);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            margin-top: 10px;
+        }
+
+        th {
+            background: #0f172a;
+            color: var(--text-muted);
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .tag-auditado {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .tag-pendente {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .tag-invalidado {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            text-decoration: line-through;
+        }
+
+        .acoes-tabela {
+            display: flex;
+            gap: 5px;
+        }
+
+        .acoes-tabela button {
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
+        /* Console HTTP e Conformidade */
+        .console-sticky {
+            position: sticky;
+            top: 20px;
+        }
+
+        .status-http {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .http-2xx {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .http-4xx {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        pre {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            color: #e2e8f0;
+            overflow-x: auto;
+            max-height: 290px;
+            white-space: pre-wrap;
+        }
+
+        .bloco-conformidade {
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--green);
+            padding: 12px 14px;
+            border-radius: 6px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .flyway-box {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 980px) {
+            .grid-principal {
+                grid-template-columns: 1fr;
+            }
+            .kpis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="marca">
+        <div class="logo-box">FIAP</div>
+        <div class="titulo-app">
+            <h1>Simulador Interativo - API ESG Cadeia de Suprimentos</h1>
+            <p>Aluno: Renan Santa Rosa Xavier | RM: 566997 | Spring Boot 3 + Oracle + Flyway + Security</p>
+        </div>
+    </div>
+
+    <div class="controles-topo">
+        <div class="seletor-auth">
+            <span>Spring Security:</span>
+            <select id="usuarioAuth" onchange="atualizarCredencial()">
+                <option value="admin:esg123">admin / esg123 - Perfil ADMIN</option>
+                <option value="fornecedor:fornecedor123">fornecedor / fornecedor123 - Perfil FORNECEDOR</option>
+                <option value="sem_login">Sem Credenciais - Testar Bloqueio 401</option>
+            </select>
+        </div>
+        <div id="badgeConexao" class="badge-modo modo-memoria">Modo Simulação Ativo</div>
+        <button class="btn-secundario" onclick="verificarConexaoApi()">Reconectar localhost:8080</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Barra de Roteiro de Apresentacao de 1 Clique -->
+    <div class="barra-roteiro">
+        <h2>Roteiro Rápido para Apresentação e Testes de Todos os Requisitos</h2>
+        <div class="botoes-roteiro">
+            <button class="btn-secundario" onclick="acaoListarFornecedores()">1. GET /fornecedores</button>
+            <button class="btn-primario" onclick="acaoCadastrarFornecedorDemo()">2. POST /fornecedores</button>
+            <button class="btn-primario" onclick="acaoCadastrarEmissaoDemo()">3. POST /emissoes</button>
+            <button class="btn-secundario" onclick="acaoBuscarEmissao(1)">4. GET /emissoes/1</button>
+            <button class="btn-verde" onclick="acaoAuditarEmissao(2)">5. PUT /emissoes/2 - Auditar</button>
+            <button class="btn-verde" onclick="acaoConsultarConformidade(1)">6. GET /fornecedores/1/conformidade</button>
+            <button class="btn-perigo" onclick="acaoInvalidarEmissao(2)">7. DELETE /emissoes/2 - Exclusão Lógica</button>
+            <button class="btn-alerta" onclick="acaoTestarProblemDetail()">8. Testar Erro ProblemDetail 400</button>
+            <button class="btn-perigo" onclick="acaoTestarSemLogin()">9. Testar Spring Security 401</button>
+        </div>
+    </div>
+
+    <!-- Indicadores em Tempo Real -->
+    <div class="kpis">
+        <div class="kpi-card">
+            <span>Fornecedores Cadastrados</span>
+            <strong id="kpiFornecedores">2</strong>
+        </div>
+        <div class="kpi-card">
+            <span>Relatórios de Emissão Ativos</span>
+            <strong id="kpiEmissoesAtivas">2</strong>
+        </div>
+        <div class="kpi-card">
+            <span>Volume Total de Carbono Ativo</span>
+            <strong id="kpiTotalCarbono">466.25 tCO2e</strong>
+        </div>
+        <div class="kpi-card">
+            <span>Banco Oracle e Flyway</span>
+            <strong style="color: var(--green); font-size: 16px; margin-top: 8px;">V1 e V2 Migrados OK</strong>
+        </div>
+    </div>
+
+    <div class="grid-principal">
+        <!-- Coluna Esquerda: Fornecedores e Emissoes -->
+        <div>
+            <!-- Painel Fornecedores -->
+            <div class="painel">
+                <div class="painel-titulo">
+                    <h3>1. Gerenciamento de Fornecedores - Rota /fornecedores</h3>
+                    <button class="btn-secundario" onclick="acaoListarFornecedores()">Atualizar Lista</button>
+                </div>
+
+                <div class="form-linha">
+                    <div class="campo">
+                        <label>Nome da Empresa</label>
+                        <input type="text" id="fornNome" value="BioEnergia Sul S.A.">
+                    </div>
+                    <div class="campo">
+                        <label>CNPJ</label>
+                        <input type="text" id="fornCnpj" value="11.222.333/0001-44">
+                    </div>
+                    <div class="campo">
+                        <label>País</label>
+                        <input type="text" id="fornPais" value="Brasil">
+                    </div>
+                    <div class="campo">
+                        <label>Nível na Cadeia</label>
+                        <select id="fornNivel">
+                            <option value="TIER_1">TIER_1</option>
+                            <option value="TIER_2">TIER_2</option>
+                            <option value="TIER_3">TIER_3</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label>Direitos Humanos</label>
+                        <select id="fornCert">
+                            <option value="true">Sim - Certificado OK</option>
+                            <option value="false">Não Possui</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-primario" onclick="submeterFormularioFornecedor()">Cadastrar Fornecedor via POST /fornecedores</button>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Empresa</th>
+                            <th>CNPJ</th>
+                            <th>Nível</th>
+                            <th>Direitos Humanos</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaFornecedores"></tbody>
+                </table>
+
+                <div id="painelConformidade" class="bloco-conformidade" style="display: none;"></div>
+            </div>
+
+            <!-- Painel Emissoes -->
+            <div class="painel">
+                <div class="painel-titulo">
+                    <h3>2. Relatórios de Emissões de Carbono Âmbito 3 - Rota /emissoes</h3>
+                    <button class="btn-alerta" onclick="acaoTestarProblemDetail()">Disparar Teste de Erro ProblemDetail</button>
+                </div>
+
+                <div class="form-linha">
+                    <div class="campo">
+                        <label>ID do Fornecedor</label>
+                        <input type="number" id="emiFornecedorId" value="1">
+                    </div>
+                    <div class="campo">
+                        <label>Categoria Âmbito 3</label>
+                        <input type="text" id="emiCategoria" value="Categoria 1 - Bens Adquiridos">
+                    </div>
+                    <div class="campo">
+                        <label>Quantidade Carbono tCO2e</label>
+                        <input type="number" step="0.01" id="emiCarbono" value="85.40">
+                    </div>
+                    <div class="campo">
+                        <label>Tipo de Dado</label>
+                        <select id="emiTipo">
+                            <option value="PRIMARIO">PRIMARIO</option>
+                            <option value="SECUNDARIO">SECUNDARIO</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label>Data do Relatório</label>
+                        <input type="date" id="emiData" value="2026-06-10">
+                    </div>
+                </div>
+                <button class="btn-primario" onclick="submeterFormularioEmissao()">Registrar Emissão via POST /emissoes</button>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fornecedor</th>
+                            <th>Categoria</th>
+                            <th>Carbono</th>
+                            <th>Status Auditoria</th>
+                            <th>Ativo</th>
+                            <th>Ações REST</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaEmissoes"></tbody>
+                </table>
+            </div>
+
+            <!-- Painel Flyway -->
+            <div class="painel">
+                <div class="painel-titulo">
+                    <h3>3. Controle de Migrações Flyway no Banco Oracle - flyway_schema_history</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Versão</th>
+                            <th>Descrição</th>
+                            <th>Arquivo SQL</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>1</code></td>
+                            <td>criar tabelas esg</td>
+                            <td><code>V1__criar_tabelas_esg.sql</code></td>
+                            <td><span class="tag tag-auditado">SUCESSO</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>2</code></td>
+                            <td>inserir dados iniciais</td>
+                            <td><code>V2__inserir_dados_iniciais.sql</code></td>
+                            <td><span class="tag tag-auditado">SUCESSO</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Console de Inspecao HTTP -->
+        <div class="console-sticky">
+            <div class="painel">
+                <div class="painel-titulo">
+                    <h3>Console de Inspeção HTTP em Tempo Real</h3>
+                    <span id="statusHttpBadge" class="status-http http-2xx">200 OK</span>
+                </div>
+
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Requisição Enviada:</p>
+                <pre id="consoleRequisicao">GET http://localhost:8080/fornecedores
+Authorization: Basic YWRtaW46ZXNnMTIz (admin:esg123)</pre>
+
+                <p style="font-size: 12px; color: var(--text-muted); margin: 12px 0 4px 0;">Resposta JSON da API:</p>
+                <pre id="consoleResposta"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://localhost:8080";
+    let apiOnline = false;
+
+    // Estado inicial identico ao V2__inserir_dados_iniciais.sql do Flyway
+    let fornecedoresMemoria = [
+        {
+            id: 1,
+            nomeEmpresa: "EcoLogistica Global S.A.",
+            cnpj: "12.345.678/0001-90",
+            pais: "Brasil",
+            nivelCadeia: "TIER_1",
+            certificadoDireitosHumanos: true,
+            dataCadastro: "2026-10-20"
+        },
+        {
+            id: 2,
+            nomeEmpresa: "Metalurgica Verde Ltda.",
+            cnpj: "98.765.432/0001-10",
+            pais: "Brasil",
+            nivelCadeia: "TIER_2",
+            certificadoDireitosHumanos: true,
+            dataCadastro: "2026-10-20"
+        }
+    ];
+
+    let emissoesMemoria = [
+        {
+            id: 1,
+            fornecedorId: 1,
+            nomeFornecedor: "EcoLogistica Global S.A.",
+            categoriaAmbito3: "Categoria 4 - Transporte e Distribuicao",
+            quantidadeCarbono: 145.50,
+            tipoDado: "PRIMARIO",
+            statusAuditoria: "AUDITADO",
+            dataRelatorio: "2026-10-20",
+            ativo: true
+        },
+        {
+            id: 2,
+            fornecedorId: 2,
+            nomeFornecedor: "Metalurgica Verde Ltda.",
+            categoriaAmbito3: "Categoria 1 - Bens e Servicos Adquiridos",
+            quantidadeCarbono: 320.75,
+            tipoDado: "PRIMARIO",
+            statusAuditoria: "PENDENTE",
+            dataRelatorio: "2026-10-20",
+            ativo: true
+        }
+    ];
+
+    function obterCabecalhoAuth() {
+        const valor = document.getElementById("usuarioAuth").value;
+        if (valor === "sem_login") {
+            return {};
+        }
+        return {
+            "Authorization": "Basic " + btoa(valor),
+            "Content-Type": "application/json"
+        };
+    }
+
+    function obterPerfilAtual() {
+        const valor = document.getElementById("usuarioAuth").value;
+        if (valor === "sem_login") return "NENHUM";
+        if (valor.startsWith("admin:")) return "ADMIN";
+        return "FORNECEDOR";
+    }
+
+    function registrarNoConsole(metodo, rota, corpoReq, statusHttp, corpoResp) {
+        const valorAuth = document.getElementById("usuarioAuth").value;
+        const headerTexto = valorAuth === "sem_login"
+            ? "Sem cabeçalho Authorization"
+            : `Authorization: Basic ${btoa(valorAuth)} (${valorAuth})`;
+
+        let textoReq = `${metodo} ${API_URL}${rota}\n${headerTexto}`;
+        if (corpoReq) {
+            textoReq += `\nContent-Type: application/json\n\n${JSON.stringify(corpoReq, null, 2)}`;
+        }
+        document.getElementById("consoleRequisicao").textContent = textoReq;
+
+        const badge = document.getElementById("statusHttpBadge");
+        badge.textContent = statusHttp;
+        badge.className = "status-http " + (statusHttp.startsWith("2") ? "http-2xx" : "http-4xx");
+
+        document.getElementById("consoleResposta").textContent =
+            corpoResp ? JSON.stringify(corpoResp, null, 2) : "Sem conteúdo no corpo da resposta - Operação concluída com sucesso.";
+    }
+
+    async function verificarConexaoApi() {
+        try {
+            const resp = await fetch(`${API_URL}/fornecedores`, {
+                headers: { "Authorization": "Basic " + btoa("admin:esg123") }
+            });
+            if (resp.ok) {
+                apiOnline = true;
+                const badge = document.getElementById("badgeConexao");
+                badge.textContent = "Conectado ao Spring Boot localhost:8080";
+                badge.className = "badge-modo modo-online";
+                await acaoListarFornecedores();
+                await carregarEmissoesDaApi();
+                return;
+            }
+        } catch (e) {
+            apiOnline = false;
+        }
+        const badge = document.getElementById("badgeConexao");
+        badge.textContent = "Modo Simulação Local Ativo";
+        badge.className = "badge-modo modo-memoria";
+        renderizarTabelas();
+    }
+
+    async function carregarEmissoesDaApi() {
+        if (!apiOnline) return;
+        try {
+            const resp = await fetch(`${API_URL}/emissoes`, {
+                headers: { "Authorization": "Basic " + btoa("admin:esg123") }
+            });
+            if (resp.ok) {
+                emissoesMemoria = await resp.json();
+                renderizarTabelas();
+            }
+        } catch (e) {}
+    }
+
+    function atualizarCredencial() {
+        acaoListarFornecedores();
+    }
+
+    function verificarSegurancaSimulada(metodo) {
+        const perfil = obterPerfilAtual();
+        if (perfil === "NENHUM") {
+            return {
+                bloqueado: true,
+                status: "401 Unauthorized",
+                erro: {
+                    status: 401,
+                    error: "Unauthorized",
+                    message: "Acesso negado pelo Spring Security: credenciais HTTP Basic ausentes"
+                }
+            };
+        }
+        if ((metodo === "PUT" || metodo === "DELETE") && perfil !== "ADMIN") {
+            return {
+                bloqueado: true,
+                status: "403 Forbidden",
+                erro: {
+                    status: 403,
+                    error: "Forbidden",
+                    message: "Acesso negado pelo Spring Security: apenas o perfil ADMIN pode alterar ou invalidar registros"
+                }
+            };
+        }
+        return { bloqueado: false };
+    }
+
+    // 1. GET /fornecedores
+    async function acaoListarFornecedores() {
+        const seg = verificarSegurancaSimulada("GET");
+        if (seg.bloqueado) {
+            registrarNoConsole("GET", "/fornecedores", null, seg.status, seg.erro);
+            return;
+        }
+
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/fornecedores`, { headers: obterCabecalhoAuth() });
+                const dados = await resp.json();
+                fornecedoresMemoria = dados;
+                registrarNoConsole("GET", "/fornecedores", null, `${resp.status} OK`, dados);
+                renderizarTabelas();
+                return;
+            } catch (e) {}
+        }
+
+        registrarNoConsole("GET", "/fornecedores", null, "200 OK", fornecedoresMemoria);
+        renderizarTabelas();
+    }
+
+    // 2. POST /fornecedores
+    async function criarFornecedor(payload) {
+        const seg = verificarSegurancaSimulada("POST");
+        if (seg.bloqueado) {
+            registrarNoConsole("POST", "/fornecedores", payload, seg.status, seg.erro);
+            return;
+        }
+
+        const errosCampos = {};
+        if (!payload.nomeEmpresa || payload.nomeEmpresa.trim() === "") errosCampos.nomeEmpresa = "O nome da empresa é obrigatório";
+        if (!payload.cnpj || payload.cnpj.trim() === "") errosCampos.cnpj = "O CNPJ é obrigatório";
+        if (!payload.pais || payload.pais.trim() === "") errosCampos.pais = "O país é obrigatório";
+
+        if (Object.keys(errosCampos).length > 0) {
+            const problemDetail = {
+                type: "about:blank",
+                title: "Erro de validação nos dados enviados",
+                status: 400,
+                detail: "Verifique os campos preenchidos incorretamente",
+                instance: "/fornecedores",
+                errosCampos: errosCampos
+            };
+            registrarNoConsole("POST", "/fornecedores", payload, "400 Bad Request", problemDetail);
+            return;
+        }
+
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/fornecedores`, {
+                    method: "POST",
+                    headers: obterCabecalhoAuth(),
+                    body: JSON.stringify(payload)
+                });
+                const dados = await resp.json();
+                registrarNoConsole("POST", "/fornecedores", payload, `${resp.status}`, dados);
+                await acaoListarFornecedores();
+                return;
+            } catch (e) {}
+        }
+
+        if (fornecedoresMemoria.some(f => f.cnpj === payload.cnpj)) {
+            const erroDuplicado = {
+                type: "about:blank",
+                title: "Regra de negócio violada",
+                status: 400,
+                detail: "Já existe um fornecedor cadastrado com este CNPJ",
+                instance: "/fornecedores"
+            };
+            registrarNoConsole("POST", "/fornecedores", payload, "400 Bad Request", erroDuplicado);
+            return;
+        }
+
+        const novo = {
+            id: fornecedoresMemoria.length + 1,
+            nomeEmpresa: payload.nomeEmpresa,
+            cnpj: payload.cnpj,
+            pais: payload.pais,
+            nivelCadeia: payload.nivelCadeia,
+            certificadoDireitosHumanos: payload.certificadoDireitosHumanos,
+            dataCadastro: "2026-10-20"
+        };
+        fornecedoresMemoria.push(novo);
+        registrarNoConsole("POST", "/fornecedores", payload, "201 Created", novo);
+        renderizarTabelas();
+    }
+
+    function submeterFormularioFornecedor() {
+        criarFornecedor({
+            nomeEmpresa: document.getElementById("fornNome").value,
+            cnpj: document.getElementById("fornCnpj").value,
+            pais: document.getElementById("fornPais").value,
+            nivelCadeia: document.getElementById("fornNivel").value,
+            certificadoDireitosHumanos: document.getElementById("fornCert").value === "true"
+        });
+    }
+
+    function acaoCadastrarFornecedorDemo() {
+        const sufixo = Math.floor(10 + Math.random() * 89);
+        document.getElementById("fornCnpj").value = `11.222.333/0001-${sufixo}`;
+        submeterFormularioFornecedor();
+    }
+
+    // 3. POST /emissoes
+    async function criarEmissao(payload) {
+        const seg = verificarSegurancaSimulada("POST");
+        if (seg.bloqueado) {
+            registrarNoConsole("POST", "/emissoes", payload, seg.status, seg.erro);
+            return;
+        }
+
+        const errosCampos = {};
+        if (!payload.categoriaAmbito3 || payload.categoriaAmbito3.trim() === "") {
+            errosCampos.categoriaAmbito3 = "A categoria de emissão é obrigatória";
+        }
+        if (payload.quantidadeCarbono === null || isNaN(payload.quantidadeCarbono) || payload.quantidadeCarbono <= 0) {
+            errosCampos.quantidadeCarbono = "A quantidade de carbono deve ser maior que zero";
+        }
+
+        if (Object.keys(errosCampos).length > 0) {
+            const problemDetail = {
+                type: "about:blank",
+                title: "Erro de validação nos dados enviados",
+                status: 400,
+                detail: "Verifique os campos preenchidos incorretamente",
+                instance: "/emissoes",
+                errosCampos: errosCampos
+            };
+            registrarNoConsole("POST", "/emissoes", payload, "400 Bad Request", problemDetail);
+            return;
+        }
+
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/emissoes`, {
+                    method: "POST",
+                    headers: obterCabecalhoAuth(),
+                    body: JSON.stringify(payload)
+                });
+                const dados = await resp.json();
+                registrarNoConsole("POST", "/emissoes", payload, `${resp.status}`, dados);
+                await carregarEmissoesDaApi();
+                return;
+            } catch (e) {}
+        }
+
+        const fornecedor = fornecedoresMemoria.find(f => f.id === Number(payload.fornecedorId));
+        if (!fornecedor) {
+            registrarNoConsole("POST", "/emissoes", payload, "404 Not Found", {
+                type: "about:blank",
+                title: "Registro não encontrado",
+                status: 404,
+                detail: "Fornecedor não encontrado com o ID: " + payload.fornecedorId,
+                instance: "/emissoes"
+            });
+            return;
+        }
+
+        const nova = {
+            id: emissoesMemoria.length + 1,
+            fornecedorId: fornecedor.id,
+            nomeFornecedor: fornecedor.nomeEmpresa,
+            categoriaAmbito3: payload.categoriaAmbito3,
+            quantidadeCarbono: Number(payload.quantidadeCarbono),
+            tipoDado: payload.tipoDado,
+            statusAuditoria: "PENDENTE",
+            dataRelatorio: payload.dataRelatorio,
+            ativo: true
+        };
+        emissoesMemoria.push(nova);
+        registrarNoConsole("POST", "/emissoes", payload, "201 Created", nova);
+        renderizarTabelas();
+    }
+
+    function submeterFormularioEmissao() {
+        criarEmissao({
+            fornecedorId: Number(document.getElementById("emiFornecedorId").value),
+            categoriaAmbito3: document.getElementById("emiCategoria").value,
+            quantidadeCarbono: Number(document.getElementById("emiCarbono").value),
+            tipoDado: document.getElementById("emiTipo").value,
+            dataRelatorio: document.getElementById("emiData").value
+        });
+    }
+
+    function acaoCadastrarEmissaoDemo() {
+        submeterFormularioEmissao();
+    }
+
+    // 4. GET /emissoes/{id}
+    async function acaoBuscarEmissao(id) {
+        const seg = verificarSegurancaSimulada("GET");
+        if (seg.bloqueado) {
+            registrarNoConsole("GET", `/emissoes/${id}`, null, seg.status, seg.erro);
+            return;
+        }
+
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/emissoes/${id}`, { headers: obterCabecalhoAuth() });
+                const dados = await resp.json();
+                registrarNoConsole("GET", `/emissoes/${id}`, null, `${resp.status} OK`, dados);
+                return;
+            } catch (e) {}
+        }
+
+        const emissao = emissoesMemoria.find(e => e.id === id);
+        registrarNoConsole("GET", `/emissoes/${id}`, null, "200 OK", emissao);
+    }
+
+    // 5. PUT /emissoes/{id}
+    async function acaoAuditarEmissao(id) {
+        const emissao = emissoesMemoria.find(e => e.id === id);
+        if (!emissao) return;
+
+        const payload = {
+            categoriaAmbito3: emissao.categoriaAmbito3,
+            quantidadeCarbono: emissao.quantidadeCarbono,
+            tipoDado: emissao.tipoDado,
+            statusAuditoria: "AUDITADO"
+        };
+
+        const seg = verificarSegurancaSimulada("PUT");
+        if (seg.bloqueado) {
+            registrarNoConsole("PUT", `/emissoes/${id}`, payload, seg.status, seg.erro);
+            return;
+        }
+
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/emissoes/${id}`, {
+                    method: "PUT",
+                    headers: obterCabecalhoAuth(),
+                    body: JSON.stringify(payload)
+                });
+                const dados = await resp.json();
+                registrarNoConsole("PUT", `/emissoes/${id}`, payload, `${resp.status} OK`, dados);
+                await carregarEmissoesDaApi();
+                return;
+            } catch (e) {}
+        }
+
+        emissao.statusAuditoria = "AUDITADO";
+        registrarNoConsole("PUT", `/emissoes/${id}`, payload, "200 OK", emissao);
+        renderizarTabelas();
+    }
+
+    // 6. GET /fornecedores/{id}/conformidade
+    async function acaoConsultarConformidade(id) {
+        const seg = verificarSegurancaSimulada("GET");
+        if (seg.bloqueado) {
+            registrarNoConsole("GET", `/fornecedores/${id}/conformidade`, null, seg.status, seg.erro);
+            return;
+        }
+
+        let relatorio;
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/fornecedores/${id}/conformidade`, { headers: obterCabecalhoAuth() });
+                relatorio = await resp.json();
+                registrarNoConsole("GET", `/fornecedores/${id}/conformidade`, null, `${resp.status} OK`, relatorio);
+            } catch (e) {}
+        }
+
+        if (!relatorio) {
+            const forn = fornecedoresMemoria.find(f => f.id === id);
+            if (!forn) return;
+            const ativas = emissoesMemoria.filter(e => e.fornecedorId === id && e.ativo);
+            const total = ativas.reduce((acc, e) => acc + Number(e.quantidadeCarbono), 0);
+            const auditado = ativas.some(e => e.statusAuditoria === "AUDITADO");
+
+            let status = "EM_ANALISE_AUDITORIA";
+            if (!forn.certificadoDireitosHumanos) status = "NAO_CONFORME_DIREITOS_HUMANOS";
+            else if (ativas.length === 0) status = "PENDENTE_REPORTE_AMBITO3";
+            else if (auditado) status = "CONFORME_AUDITADO";
+
+            relatorio = {
+                fornecedorId: forn.id,
+                nomeEmpresa: forn.nomeEmpresa,
+                nivelCadeia: forn.nivelCadeia,
+                certificadoDireitosHumanos: forn.certificadoDireitosHumanos,
+                totalRelatoriosAtivos: ativas.length,
+                totalCarbonoToneladas: Number(total.toFixed(2)),
+                statusConformidadeGlobal: status
+            };
+            registrarNoConsole("GET", `/fornecedores/${id}/conformidade`, null, "200 OK", relatorio);
+        }
+
+        const box = document.getElementById("painelConformidade");
+        box.style.display = "block";
+        box.innerHTML = `
+            <strong>Diagnóstico de Conformidade ESG - ${relatorio.nomeEmpresa}:</strong><br>
+            Status Global: <code>${relatorio.statusConformidadeGlobal}</code> |
+            Relatórios Ativos: <strong>${relatorio.totalRelatoriosAtivos}</strong> |
+            Total Emitido: <strong>${relatorio.totalCarbonoToneladas} tCO2e</strong>
+        `;
+    }
+
+    // 7. DELETE /emissoes/{id}
+    async function acaoInvalidarEmissao(id) {
+        const seg = verificarSegurancaSimulada("DELETE");
+        if (seg.bloqueado) {
+            registrarNoConsole("DELETE", `/emissoes/${id}`, null, seg.status, seg.erro);
+            return;
+        }
+
+        if (apiOnline) {
+            try {
+                const resp = await fetch(`${API_URL}/emissoes/${id}`, {
+                    method: "DELETE",
+                    headers: obterCabecalhoAuth()
+                });
+                registrarNoConsole("DELETE", `/emissoes/${id}`, null, `${resp.status} No Content`, null);
+                await carregarEmissoesDaApi();
+                return;
+            } catch (e) {}
+        }
+
+        const emissao = emissoesMemoria.find(e => e.id === id);
+        if (emissao) {
+            emissao.ativo = false;
+            emissao.statusAuditoria = "INVALIDADO";
+        }
+        registrarNoConsole("DELETE", `/emissoes/${id}`, null, "204 No Content", null);
+        renderizarTabelas();
+    }
+
+    // 8. Testar ProblemDetail RFC 9457
+    function acaoTestarProblemDetail() {
+        criarEmissao({
+            fornecedorId: 1,
+            categoriaAmbito3: "",
+            quantidadeCarbono: -50.00,
+            tipoDado: "PRIMARIO",
+            dataRelatorio: "2026-06-10"
+        });
+    }
+
+    // 9. Testar bloqueio 401 Spring Security
+    function acaoTestarSemLogin() {
+        document.getElementById("usuarioAuth").value = "sem_login";
+        acaoListarFornecedores();
+    }
+
+    function renderizarTabelas() {
+        const tbodyForn = document.getElementById("tabelaFornecedores");
+        tbodyForn.innerHTML = fornecedoresMemoria.map(f => `
+            <tr>
+                <td>${f.id}</td>
+                <td><strong>${f.nomeEmpresa}</strong></td>
+                <td>${f.cnpj}</td>
+                <td><code>${f.nivelCadeia}</code></td>
+                <td>${f.certificadoDireitosHumanos ? '<span class="tag tag-auditado">SIM</span>' : '<span class="tag tag-invalidado">NÃO</span>'}</td>
+                <td class="acoes-tabela">
+                    <button class="btn-verde" onclick="acaoConsultarConformidade(${f.id})">Conformidade ESG</button>
+                </td>
+            </tr>
+        `).join("");
+
+        const tbodyEmi = document.getElementById("tabelaEmissoes");
+        tbodyEmi.innerHTML = emissoesMemoria.map(e => {
+            let classeTag = "tag-pendente";
+            if (e.statusAuditoria === "AUDITADO") classeTag = "tag-auditado";
+            if (e.statusAuditoria === "INVALIDADO" || !e.ativo) classeTag = "tag-invalidado";
+
+            return `
+                <tr>
+                    <td>${e.id}</td>
+                    <td>${e.nomeFornecedor}</td>
+                    <td>${e.categoriaAmbito3}</td>
+                    <td><strong>${Number(e.quantidadeCarbono).toFixed(2)} t</strong></td>
+                    <td><span class="tag ${classeTag}">${e.statusAuditoria}</span></td>
+                    <td>${e.ativo ? "Sim" : "Não"}</td>
+                    <td class="acoes-tabela">
+                        <button class="btn-secundario" onclick="acaoBuscarEmissao(${e.id})">GET</button>
+                        <button class="btn-verde" onclick="acaoAuditarEmissao(${e.id})">PUT Auditar</button>
+                        <button class="btn-perigo" onclick="acaoInvalidarEmissao(${e.id})">DELETE</button>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+
+        // Atualiza KPIs
+        const ativas = emissoesMemoria.filter(e => e.ativo);
+        const somaCarbono = ativas.reduce((acc, e) => acc + Number(e.quantidadeCarbono), 0);
+        document.getElementById("kpiFornecedores").textContent = fornecedoresMemoria.length;
+        document.getElementById("kpiEmissoesAtivas").textContent = ativas.length;
+        document.getElementById("kpiTotalCarbono").textContent = somaCarbono.toFixed(2) + " tCO2e";
+    }
+
+    verificarConexaoApi();
+</script>
+
+</body>
+</html>
